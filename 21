@@ -1,0 +1,37 @@
+import pandas as pd
+import numpy as np
+from sklearn.linear_model import LinearRegression
+
+df = pd.read_csv(r"C:\Users\Admin\Downloads\day21_housing.csv")
+
+df['price_per_sqft'] = np.where(df['sqft'] > 0,
+                                 df['price'] / df['sqft'],
+                                 0)
+
+df['price_per_room'] = np.where(df['rooms'] > 0,
+                                 df['price'] / df['rooms'],
+                                 0)
+
+df['bedroom_ratio'] = np.where(df['rooms'] > 0,
+                                df['bedrooms'] / df['rooms'],
+                                0)
+
+
+X_basic = df[['sqft', 'rooms', 'bedrooms']]
+y = df['price']
+
+model_basic = LinearRegression()
+model_basic.fit(X_basic, y)
+score_basic = model_basic.score(X_basic, y)
+
+X_domain = df[['sqft', 'rooms', 'bedrooms',
+               'price_per_sqft',
+               'price_per_room',
+               'bedroom_ratio']]
+
+model_domain = LinearRegression()
+model_domain.fit(X_domain, y)
+score_domain = model_domain.score(X_domain, y)
+
+print("Basic model R2:", score_basic)
+print("Domain features model R2:", score_domain)
